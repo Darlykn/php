@@ -1,199 +1,84 @@
 <?php
-require_once('helpers.php');
-require_once('functions.php');
-require_once('init.php');
-
-$user_list = get_user_list($con);
-$categories = get_categories($con);
-$nav = include_template('categories.php', ['categories' => $categories]);
-const MIN_NAME = 2;
-const MAX_NAME = 30;
-const MAX_EMAIL = 300;
-const MAX_CONTACT = 300;
-$errors = [];
-$required_fields = ['email', 'password', 'name', 'message'];
-if (isset($_SESSION['is_auth']) && $_SESSION['is_auth']) {
-    http_response_code(403);
-    $detail = include_template('403.php', ['nav' => $nav]);
-    print(include_template('layout.php', [
-
-        'title' => '403',
-        'nav' => $nav,
-        'main' => $detail
-    ]));
-} else {
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-        foreach ($required_fields as $field) {
-            if (empty($_POST[$field])) {
-                $errors[$field] = 'Поле не заполнено';
-            }
-        }
-
-        if (!isset($errors['email'])) {
-            foreach ($user_list as $user_item) {
-               
-                if($user_item["email"] === $_POST['email']){
-                    $errors['email'] = 'Такой email уже используется!';
-                    break;
-                }
-            }  
-            
-        }
-        if (!isset($errors['email'])) {
-            if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-                $errors['email'] = 'email введен некорректно!';
-            }
-
-        }
-        if (!isset($errors['name'])) {
-            $len = strlen($_POST['name']);
-
-            if ($len < MIN_NAME or $len > MAX_NAME) {
-                $errors['name'] = "Имя должно быть от " . MIN_NAME . " до " . MAX_NAME . " символов";
-            }
-        }
-
-        if (!isset($errors['email'])) {
-            $len = strlen($_POST['email']);
-
-            if ($len > MAX_EMAIL) {
-                $errors['email'] = "Email должен быть до " . MAX_EMAIL . " символов";
-            }
-        }
-
-        if (!isset($errors['message'])) {
-            $len = strlen($_POST['message']);
-
-            if ($len > MAX_CONTACT) {
-                $errors['message'] = "Контактная информация должна быть до " . MAX_CONTACT . " символов";
-            }
-        }
-        if (!$errors) {
-            $email = $_POST['email'];
-            $name = $_POST['name'];
-            $password = $_POST['password'];
-            $message = $_POST['message'];
-
-            add_user($email, $name, $password, $message, $con);
-            $detail_lot = header('Location: /login.php');
-            print(include_template('layout.php', [
-                'title' => 'Вход',
-                'nav' => $nav,
-                'main' => $detail_lot
-            ]));
-
-        }
-
-
-    }
-
-    $add_content = include_template('sign-up-template.php', ['nav' => $nav, 'errors' => $errors]);
-    $detail_lot = print(include_template('layout.php', [
-        'title' => 'Регистрация',
-        'main' => $add_content,
-        'nav' => $nav
-    ]));
-}
-
-
-
-<?php
-require_once('helpers.php');
-require_once('functions.php');
-require_once('init.php');
-
-$categories = get_categories($con);
-$nav = include_template('categories.php', ['categories' => $categories]);
-
-$errors = [];
-$required_fields = ['email', 'password'];
-if (isset($_SESSION['is_auth']) && $_SESSION['is_auth']) {
-    http_response_code(403);
-    $detail = include_template('403.php', ['nav' => $nav]);
-    print(include_template('layout.php', [
-
-        'title' => '403',
-        'nav' => $nav,
-        'main' => $detail
-    ]));
-} else {
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        foreach ($required_fields as $field) {
-            if (empty($_POST[$field])) {
-                $errors[$field] = 'Поле не заполнено';
-            }
-        }
-
-        if (!isset($errors['email'])) {
-            $user_get = get_user($_POST['email'], $con);
-            if ($user_get) {
-                if (!isset($errors['password'])) {
-                    if (!password_verify($_POST['password'], $user_get['password'])) {
-                        $errors['password'] = 'Пароль введен неверно';
-
-                    } else {
-
-                        $_SESSION['username'] = $user_get['name'];
-                        $_SESSION['is_auth'] = 1;
-                        $_SESSION['id_user'] = $user_get['id'];
-        
-                        header('Location: /');
-                        
-                    }
-                }
-            } else {
-                $errors['email'] = 'Еmail введен неверно';
-            }
-
-        }
-    }
-
-    $add_content = include_template('login-template.php', ['nav' => $nav, 'errors' => $errors]);
-    $detail_lot = print(include_template('layout.php', [
-
-        'title' => 'Вход',
-        'main' => $add_content,
-        'nav' => $nav
-    ]));
-}
-
-
-function get_user_list(mysqli $con): array
-{
-    $sql = "SELECT id, date_reg, email, name, contact, password FROM User";
-    return mysqli_fetch_all(mysqli_query($con, $sql), MYSQLI_ASSOC);
-}
-
-function add_user(string $email, string $name, string $password, string $message, mysqli $con)
-{
-
-    $password_temp = password_hash($password, PASSWORD_DEFAULT);
-    $sql = "INSERT INTO User(email, name, contact, password)
-            VALUES(?,?,?,?);";
-    $stmt = mysqli_prepare($con, $sql);
-
-    mysqli_stmt_bind_param($stmt, 'ssss', $email, $name, $message, $password_temp);
-
-    mysqli_stmt_execute($stmt);
-
-}
-
-function get_user(string $email, mysqli $con): array|null
-{
-    $sql = "SELECT id, date_reg, email, name, contact, password FROM User WHERE email = ?";
-    $stmt = mysqli_prepare($con, $sql);
-    mysqli_stmt_bind_param($stmt, 's', $email);
-    mysqli_stmt_execute($stmt);
-    $res = mysqli_stmt_get_result($stmt);
-    return mysqli_fetch_assoc($res);
-
-
-
-<?php
+require_once ('helpers.php');
+require_once ('functions.php');
 require_once ('init.php');
-$_SESSION = [];
-header("Location: /");
-die();
+$categories = get_categories($con);
+$nav = include_template('categories.php', ['categories' => $categories]);
+const OFFSET_ONE = 1;
+const LIMIT = 3;
+if(!empty($_GET)){
+    $searchs = trim($_GET['search']);
+    $search_str = isset($_GET['search']) ? $_GET['search'] : "";
+    $count_lot = search_lot_count($searchs, $con);
+    
+    $count_pages = ceil($count_lot/LIMIT);
+    $curr_page =  isset($_GET['page']) ? $_GET['page'] : 1;
+    
+    $offset = ($curr_page - OFFSET_ONE) * LIMIT;
+    $search_lot = search_lot($searchs, $con, LIMIT, $offset);
+}
 
 
+$main = include_template('search-template.php', [
+    'nav' => $nav,
+    'lots' => $search_lot,
+    'search_str' => $search_str,
+    'count_page' => $count_pages,
+    'curr_page' => $curr_page
+]);
+
+print($layout = include_template('layout.php', [
+    'title' => 'Поиск',
+    'nav' => $nav,
+    'main' => $main
+]));
+
+<?= $nav?>
+<main>
+<div class="container">
+    <?php if($lots):?>
+    <section class="lots">
+        <h2>Результаты поиска по запросу «<span><?=  isset($_GET['search']) ? $_GET['search'] : ""; ?></span>»</h2>
+        <ul class="lots__list">
+
+            <?php foreach ($lots as $item):?>
+                <li class="lots__item lot">
+                    <div class="lot__image">
+                        <img src="<?=htmlspecialchars($item['picture'])?>" width="350" height="260" alt="">
+                    </div>
+                    <div class="lot__info">
+                        <span class="lot__category"><?=htmlspecialchars($item['name_category'])?></span>
+                        <h3 class="lot__title"><a class="text-link" href="lot.php?id=<?=$item['id']?>"><?=htmlspecialchars($item['name_lot'])?></a></h3>
+                        <div class="lot__state">
+
+                            <div class="lot__rate">
+                                <span class="lot__amount">Стартовая цена</span>
+                                <span class="lot__cost"><?=htmlspecialchars(formatSum($item['start_price']))?></span>
+                            </div>
+
+                            <?php $date_end = timeEnd($item['date_expiry'])?>
+
+                            <div class="lot__timer timer <?php if((int)$date_end[0] <= 24):?> timer--finishing <?php endif; ?>">
+                                <?= "$date_end[0]:$date_end[1]"?>
+                            </div>
+
+                        </div>
+                    </div>
+                </li>
+            <?php endforeach;?>
+        </ul>
+    </section>
+    <ul class="pagination-list">
+        <li class="pagination-item pagination-item-prev"><a href="searchs.php?search=<?=$search_str ?>&find=Найти&page=<?= $curr_page <= 1 ? 1 : $curr_page - 1?>">Назад</a></li>
+        <?php for($i = 1; $i <= $count_page; $i++):?>
+        <li class="pagination-item <?=intval($curr_page) === $i ? "pagination-item-active" : ""?>"><a href="searchs.php?search=<?=$search_str ?>&find=Найти&page=<?=$i?>"><?=$i?></a></li>
+        <?php endfor;?>
+        <li class="pagination-item pagination-item-next"><a href="searchs.php?search=<?=$search_str ?>&find=Найти&page=<?= $curr_page>= $count_page ? $curr_page: $curr_page + 1?>">Вперед</a></li>
+        
+    </ul>
+    <?php else:?>
+    <h2>Результаты поиска по запросу «<span><?=  $search_str ?></span>»</h2>
+    <h3>По вашему запросу ничего не найдено</h3>
+    <?php endif;?>
+</div>
+</main>
