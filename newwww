@@ -1,84 +1,16 @@
-<?php
-require_once ('helpers.php');
-require_once ('functions.php');
-require_once ('init.php');
-$categories = get_categories($con);
-$nav = include_template('categories.php', ['categories' => $categories]);
-const OFFSET_ONE = 1;
-const LIMIT = 3;
-if(!empty($_GET)){
-    $searchs = trim($_GET['search']);
-    $search_str = isset($_GET['search']) ? $_GET['search'] : "";
-    $count_lot = search_lot_count($searchs, $con);
-    
-    $count_pages = ceil($count_lot/LIMIT);
-    $curr_page =  isset($_GET['page']) ? $_GET['page'] : 1;
-    
-    $offset = ($curr_page - OFFSET_ONE) * LIMIT;
-    $search_lot = search_lot($searchs, $con, LIMIT, $offset);
+if (!isset($errors['email']) && !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+    $errors['email'] = 'Email должен быть корректным';
 }
 
+// Проверка на существование email в базе данных
+if (!isset($errors['email'])) {
+    $user_get = get_user($_POST['email'], $con);
+    if (!$user_get) {
+        $errors['email'] = 'Такого email нет в базе данных';
+    }
+}
 
-$main = include_template('search-template.php', [
-    'nav' => $nav,
-    'lots' => $search_lot,
-    'search_str' => $search_str,
-    'count_page' => $count_pages,
-    'curr_page' => $curr_page
-]);
-
-print($layout = include_template('layout.php', [
-    'title' => 'Поиск',
-    'nav' => $nav,
-    'main' => $main
-]));
-
-<?= $nav?>
-<main>
-<div class="container">
-    <?php if($lots):?>
-    <section class="lots">
-        <h2>Результаты поиска по запросу «<span><?=  isset($_GET['search']) ? $_GET['search'] : ""; ?></span>»</h2>
-        <ul class="lots__list">
-
-            <?php foreach ($lots as $item):?>
-                <li class="lots__item lot">
-                    <div class="lot__image">
-                        <img src="<?=htmlspecialchars($item['picture'])?>" width="350" height="260" alt="">
-                    </div>
-                    <div class="lot__info">
-                        <span class="lot__category"><?=htmlspecialchars($item['name_category'])?></span>
-                        <h3 class="lot__title"><a class="text-link" href="lot.php?id=<?=$item['id']?>"><?=htmlspecialchars($item['name_lot'])?></a></h3>
-                        <div class="lot__state">
-
-                            <div class="lot__rate">
-                                <span class="lot__amount">Стартовая цена</span>
-                                <span class="lot__cost"><?=htmlspecialchars(formatSum($item['start_price']))?></span>
-                            </div>
-
-                            <?php $date_end = timeEnd($item['date_expiry'])?>
-
-                            <div class="lot__timer timer <?php if((int)$date_end[0] <= 24):?> timer--finishing <?php endif; ?>">
-                                <?= "$date_end[0]:$date_end[1]"?>
-                            </div>
-
-                        </div>
-                    </div>
-                </li>
-            <?php endforeach;?>
-        </ul>
-    </section>
-    <ul class="pagination-list">
-        <li class="pagination-item pagination-item-prev"><a href="searchs.php?search=<?=$search_str ?>&find=Найти&page=<?= $curr_page <= 1 ? 1 : $curr_page - 1?>">Назад</a></li>
-        <?php for($i = 1; $i <= $count_page; $i++):?>
-        <li class="pagination-item <?=intval($curr_page) === $i ? "pagination-item-active" : ""?>"><a href="searchs.php?search=<?=$search_str ?>&find=Найти&page=<?=$i?>"><?=$i?></a></li>
-        <?php endfor;?>
-        <li class="pagination-item pagination-item-next"><a href="searchs.php?search=<?=$search_str ?>&find=Найти&page=<?= $curr_page>= $count_page ? $curr_page: $curr_page + 1?>">Вперед</a></li>
-        
-    </ul>
-    <?php else:?>
-    <h2>Результаты поиска по запросу «<span><?=  $search_str ?></span>»</h2>
-    <h3>По вашему запросу ничего не найдено</h3>
-    <?php endif;?>
-</div>
-</main>
+// Проверка пароля, если email существует
+if (!isset($errors['email']) && !isset($errors['password'])) {
+    // Ваша логика верификации пароля...
+}
