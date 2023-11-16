@@ -1,16 +1,66 @@
-if (!isset($errors['email']) && !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-    $errors['email'] = 'Email должен быть корректным';
-}
 
-// Проверка на существование email в базе данных
-if (!isset($errors['email'])) {
-    $user_get = get_user($_POST['email'], $con);
-    if (!$user_get) {
-        $errors['email'] = 'Такого email нет в базе данных';
+<?php
+
+namespace App;
+
+class Truncater
+{
+    const OPTIONS = [
+        'separator' => '...',
+        'length' => 200,
+    ];
+    
+    private $options = [];
+
+    public function __construct($options = [])
+    {
+        $this->options = array_merge(self::OPTIONS, $options);
+    }
+    public function truncate($string, $callOptions = [])
+    {
+        $newOptions = array_merge($this->options, $callOptions);
+
+        $substr = substr($string, 0, $newOptions['length']);
+
+        if (strlen($substr) < strlen($string)) {
+            return "{$substr}{$newOptions['separator']}";
+        } else {
+            return $substr;
+        }
     }
 }
 
-// Проверка пароля, если email существует
-if (!isset($errors['email']) && !isset($errors['password'])) {
-    // Ваша логика верификации пароля...
+
+
+
+
+<?php
+
+namespace App\Converter;
+
+function toStd(array $array): \stdClass{
+    $std = new \stdClass();
+    foreach ($array as $key => $value) {
+        $std->$key = $value;
+    }
+    return $std;
+}
+
+<?php
+
+namespace App;
+
+class Course
+{
+    private $name;
+
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
 }
