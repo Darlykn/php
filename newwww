@@ -1,31 +1,78 @@
+<?php
+namespace App;
+use Carbon\Carbon;
+
 class Booking
 {
-    private $dates = [];
+    private $bookedDates = [];
 
-    public function book($begin, $end)
+    public function book(string $startDate, string $endDate): bool
     {
-        $carbonNewBegin = new Carbon($begin);
-        $carbonNewEnd = new Carbon($end);
-        if ($this->canBook($carbonNewBegin, $carbonNewEnd)) {
-            $this->dates[] = [$carbonNewBegin, $carbonNewEnd];
-            return true;
-        }
+        $start =  new Carbon($startDate);
+        $end = new Carbon($endDate);
 
-        return false;
-    }
-
-    public function canBook($begin, $end)
-    {
-        if ($begin >= $end) {
+        // Проверяем корректность дат
+        if ($start >= $end) {
             return false;
         }
-
-        foreach ($this->dates as [$bookedBegin, $bookedEnd]) {
-            $isIntersected = $begin < $bookedEnd && $end > $bookedBegin;
+        // Проверяем, доступна ли бронь
+        foreach ($this->bookedDates as $dates) {
+            $isIntersected = $start < $dates['end'] && $end > $dates['start'];
             if ($isIntersected) {
                 return false;
             }
         }
+
+        // Добавляем бронь
+        $this->bookedDates[] = ['start' => $start, 'end' => $end];
         return true;
     }
 }
+
+
+<?php
+namespace App\Normalizer;
+use Symfony\Component\String\UnicodeString;
+
+function getQuestions(string $text): string
+{
+    $lines = explode("\n", $text);
+    $questions = [];
+
+    foreach ($lines as $line) {
+        $trimmedLine = (new UnicodeString($line))->trim();
+        if ($trimmedLine->endsWith('?')) {
+            $questions[] = $trimmedLine->toString();
+        }
+    }
+
+    return implode("\n", $questions);
+}
+
+<?php
+namespace App\Dates;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use Illuminate\Support\Collection;
+
+function buildRange(array $data, string $begin, string $end): array {
+    $period = CarbonPeriod::create($begin, $end);
+
+    // Преобразование входных данных для удобного доступа
+    $data = collect($data)->keyBy(function ($item) {
+        return Carbon::createFromFormat('d.m.Y', $item['date'])->format('Y-m-d');
+    });
+
+    $result = [];
+    foreach ($period as $date) {
+        $dateStr = $date->format('Y-m-d');
+        $result[] = [
+            'value' => $data->has($dateStr) ? $data[$dateStr]['value'] : 0,
+            'date' => $date->format('d.m.Y')
+        ];
+    }
+
+    return $result;
+}
+
+
