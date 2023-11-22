@@ -1,5 +1,27 @@
 <?php
 namespace App\Normalizer;
+use Symfony\Component\String\s;
+
+function getQuestions(string $text): string
+{
+    $lines = explode("\n", $text);
+    $questions = [];
+
+    foreach ($lines as $line) {
+        $trimmedLine = s($line)->trim();
+        if ($trimmedLine->endsWith('?')) {
+            $questions[] = $trimmedLine->toString();
+        }
+    }
+
+    return implode("\n", $questions);
+}
+
+
+
+
+<?php
+namespace App\Normalizer;
 use Symfony\Component\String\UnicodeString;
 
 function getQuestions(string $text): string
