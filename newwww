@@ -1,36 +1,4 @@
 <?php
-namespace App;
-use Carbon\Carbon;
-
-class Booking
-{
-    private $bookedDates = [];
-
-    public function book(string $startDate, string $endDate): bool
-    {
-        $start =  new Carbon($startDate);
-        $end = new Carbon($endDate);
-
-        // Проверяем корректность дат
-        if ($start >= $end) {
-            return false;
-        }
-        // Проверяем, доступна ли бронь
-        foreach ($this->bookedDates as $dates) {
-            $isIntersected = $start < $dates['end'] && $end > $dates['start'];
-            if ($isIntersected) {
-                return false;
-            }
-        }
-
-        // Добавляем бронь
-        $this->bookedDates[] = ['start' => $start, 'end' => $end];
-        return true;
-    }
-}
-
-
-<?php
 namespace App\Normalizer;
 use Symfony\Component\String\UnicodeString;
 
@@ -73,6 +41,92 @@ function buildRange(array $data, string $begin, string $end): array {
     }
 
     return $result;
+}
+
+<?php
+namespace App;
+
+use App\ObjInterface;
+use ArrayAccess;
+
+class Obj implements ObjInterface, ArrayAccess
+{
+    private array $object;
+
+    public function __construct($array)
+    {
+        foreach ($array as $key => $value) {
+            !is_array($value) ? $this->object[$key] = $value : $this->object[$key] = new Obj($value);
+        }
+    }
+    public function __get($key)
+    {
+        return $this->object[$key] ?? null;
+    }
+
+    public function __set($key, $value)
+    {
+        $this->object[$key] = $value;
+    }
+
+    public function offsetExists(mixed $key): bool
+    {
+        return isset($this->object[$key]);
+    }
+
+    public function offsetGet(mixed $key): mixed
+    {
+        return isset($this->object[$key]) ? $this->object[$key] : null;
+    }
+
+    public function offsetSet(mixed $key, mixed $value): void
+    {
+        $this->object[$key] = $value;
+    }
+
+    public function offsetUnset(mixed $key): void
+    {
+        unset($this->object[$key]);
+    }
+}
+
+<?php
+namespace App\LinkedList;
+
+use App\Node;
+function reverse($node)
+{
+    $reversedList = new Node($node->getValue());
+    $current = $node -> getNext();
+
+    while ($current) {
+        $reversedList = new Node($current->getValue(), $reversedList);
+        $current = $current->getNext();
+    }
+    return $reversedList;
+}
+
+<?php
+
+namespace App;
+
+class Node
+{
+    public function __construct($value, Node $node = null)
+    {
+        $this->next = $node;
+        $this->value = $value;
+    }
+
+    public function getNext()
+    {
+        return $this->next;
+    }
+
+    public function getValue()
+    {
+        return $this->value;
+    }
 }
 
 
