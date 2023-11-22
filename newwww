@@ -15,70 +15,24 @@ function reverse($node)
 }
 
 <?php
+
 namespace App\HTML;
 
-function getLinks(array $tags): array
-{
-    $searchingTags = array_filter($tags, fn($item)=>$item['name'] === 'a' || $item['name'] === 'link' ||
-    $item['name'] === 'img');
-    return array_reduce($searchingTags, function ($acc, $item) {
-        switch ($item) {
-            case $item['name'] === 'img':
-                $acc[] =  $item['src'];
-                break;
-            case $item['name'] === 'a' || $item['name'] === 'link':
-                $acc[] = $item['href'];
-                break;
-        }
-        return $acc;
-    }, []);
-}
+use Tightenco\Collect;
 
-<?php
-namespace App\HTML;
-
-function stringify(array $tag): string
-{
-    $type = $tag['tagType'];
+function getLinks(array $tags): array {
     $mapping = [
-        'pair' =>
-            function ($tag) {
-                $pair = '';
-                $info = '';
-                $body = '';
-                foreach ($tag as $key => $value) {
-                    switch ($key) {
-                        case 'name':
-                            $pair = $value;
-                            break;
-                        case 'tagType':
-                            break;
-                        case 'body':
-                            $body = ">{$value}<";
-                            break;
-                        default:
-                            $info .= ' ' . $key . '=' . '"' . $value . '"';
-                    }
-                }
-                return "<{$pair}{$info}{$body}/{$pair}>";
-            },
-        'single' =>
-                function ($tag) {
-                    $pair = '';
-                    $body = '';
-                    foreach ($tag as $key => $value) {
-                        switch ($key) {
-                            case 'name':
-                                $pair = $value;
-                                break;
-                            case 'tagType':
-                                break;
-                            default:
-                                $body .= ' ' . $key . '=' . '"' . $value . '"';
-                        }
-                    }
-                    return "<{$pair}{$body}>";
-                }
-            ];
-    return $mapping[$type]($tag);
+        'a' =>
+            fn ($tag) => $tag['href'],
+        'link' =>
+            fn ($tag) => $tag['href'],
+        'img' =>
+            fn ($tag) => $tag['src'],
+    ];
+
+    return collect($tags)
+        ->filter(fn ($tag) => in_array($tag['name'], array_keys($mapping)))
+        ->map(fn ($tag) => $mapping[$tag['name']]($tag))
+        ->values()
+        ->all();
 }
