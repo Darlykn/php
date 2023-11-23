@@ -1,99 +1,5 @@
 <?php
 
-namespace App\Helpers;
-
-function getGreeting($user)
-{
-    $userType = $user->getType();
-
-    if ($userType == 'registered') {
-        return "Hello " . $user->getName() . "!";
-    } elseif ($userType == 'guest') {
-        return "Nice to meet you Guest!";
-    } else {
-        // Опционально: обработка других типов пользователей
-        return "Hello there!";
-    }
-}
-<?php
-
-namespace App;
-
-class User
-{
-    // ... существующий код ...
-
-    public function getType()
-    {
-        return 'registered';
-    }
-
-    // ... остальной код ...
-}
-
-class Guest
-{
-    // ... существующий код ...
-
-    public function getType()
-    {
-        return 'guest';
-    }
-
-    // ... остальной код ...
-}
-
-
-
-<?php
-
-
-
-namespace App\Helpers;
-
-use App\User;
-use App\Guest;
-
-function getGreeting($user) {
-    if ($user instanceof User) {
-        return "Hello " . $user->getName() . "!";
-    } elseif ($user instanceof Guest) {
-        return "Nice to meet you Guest!";
-    }
-}
-
-// src/User.php
-
-namespace App;
-
-class User {
-    private $name;
-
-    public function __construct($name) {
-        $this->name = $name;
-    }
-
-    public function getName() {
-        return $this->name;
-    }
-}
-
-// src/Guest.php
-
-namespace App;
-
-class Guest {
-    public function getName() {
-        return 'Guest';
-    }
-}
-
-
-
-
-
-<?php
-
 namespace App;
 
 class User
@@ -110,23 +16,11 @@ class User
         return $this->name;
     }
 
-    // BEGIN (write your solution here)
-
-    // END
+    public function getGreeting()
+    {
+        return "Hello " . $this->getName() . "!";
+    }
 }
-
-<?php
-
-namespace App\Helpers;
-
-// BEGIN (write your solution here)
-
-// END
-
-
-<?php
-
-namespace App;
 
 class Guest
 {
@@ -135,75 +29,18 @@ class Guest
         return 'Guest';
     }
 
-    // BEGIN (write your solution here)
-
-    // END
+    public function getGreeting()
+    {
+        return "Nice to meet you Guest!";
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <?php
 
-namespace App;
+namespace App\Helpers;
 
-// src/FakeSubscription.php
-
-class FakeSubscription extends Subscription
+function getGreeting($user)
 {
-    private $user;
-
-    public function __construct($user)
-    {
-        parent::__construct('');
-        $this->user = $user;
-    }
-
-    public function hasProfessionalAccess()
-    {
-        return $this->user->isAdmin();
-    }
-
-    public function hasPremiumAccess()
-    {
-        return $this->user->isAdmin();
-    }
-}
-
-// src/User.php
-
-class User
-{
-    private $currentSubscription;
-    private $email;
-
-    public function __construct($email, $currentSubscription = null)
-    {
-        $this->email = $email;
-        if ($currentSubscription === null) {
-            $this->currentSubscription = new FakeSubscription($this);
-        } else {
-            $this->currentSubscription = $currentSubscription;
-        }
-    }
-
-    public function getCurrentSubscription()
-    {
-        return $this->currentSubscription;
-    }
-
-    public function isAdmin()
-    {
-        return $this->email === 'rakhim@ht.io';
-    }
+    return $user->getGreeting();
 }
