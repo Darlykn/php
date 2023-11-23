@@ -2,6 +2,67 @@
 
 namespace App;
 
+class User
+{
+    private $name;
+
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    // BEGIN (write your solution here)
+
+    // END
+}
+
+<?php
+
+namespace App\Helpers;
+
+// BEGIN (write your solution here)
+
+// END
+
+
+<?php
+
+namespace App;
+
+class Guest
+{
+    public function getName()
+    {
+        return 'Guest';
+    }
+
+    // BEGIN (write your solution here)
+
+    // END
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?php
+
+namespace App;
+
 // src/FakeSubscription.php
 
 class FakeSubscription extends Subscription
