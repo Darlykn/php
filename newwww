@@ -1,71 +1,31 @@
 <?php
 
-namespace App\Tests;
-
-use PHPUnit\Framework\TestCase;
-use App\Subscription;
-use App\User;
-
-class AppTest extends TestCase
-{
-    public function testSubscriptions()
-    {
-        $user = new User('vasya@email.com', new Subscription('premium'));
-        $result = $user->getCurrentSubscription()->hasPremiumAccess(); // true
-        $this->assertTrue($result);
-        $result = $user->getCurrentSubscription()->hasProfessionalAccess(); // false
-        $this->assertFalse($result);
-
-        $user = new User('vasya@email.com', new Subscription('professional'));
-        $result = $user->getCurrentSubscription()->hasPremiumAccess(); // false
-        $this->assertFalse($result);
-        $result = $user->getCurrentSubscription()->hasProfessionalAccess(); // true
-        $this->assertTrue($result);
-
-        $user = new User('vasya@email.com');
-        $result = $user->getCurrentSubscription()->hasPremiumAccess(); // false
-        $this->assertFalse($result);
-        $result = $user->getCurrentSubscription()->hasProfessionalAccess(); // false
-        $this->assertFalse($result);
-
-        $user = new User('rakhim@ht.io'); // администратор, проверяется по емейлу
-        $result = $user->getCurrentSubscription()->hasPremiumAccess(); // true
-        $this->assertTrue($result);
-        $result = $user->getCurrentSubscription()->hasProfessionalAccess(); // true
-        $this->assertTrue($result);
-    }
-}
-
-
-
-
-
-<?php
-
 namespace App;
 
-class Subscription
-{
-    private $subscriptionPlanName;
+// src/FakeSubscription.php
 
-    public function __construct($subscriptionPlanName)
+class FakeSubscription extends Subscription
+{
+    private $user;
+
+    public function __construct($user)
     {
-        $this->subscriptionPlanName = $subscriptionPlanName;
+        parent::__construct('');
+        $this->user = $user;
     }
+
     public function hasProfessionalAccess()
     {
-        return $this->subscriptionPlanName === 'professional';
+        return $this->user->isAdmin();
     }
 
     public function hasPremiumAccess()
     {
-        return $this->subscriptionPlanName === 'premium';
+        return $this->user->isAdmin();
     }
 }
 
-<?php
-
-namespace App;
+// src/User.php
 
 class User
 {
@@ -75,10 +35,11 @@ class User
     public function __construct($email, $currentSubscription = null)
     {
         $this->email = $email;
-        // BEGIN (write your solution here)
-        
-        // END
-        
+        if ($currentSubscription === null) {
+            $this->currentSubscription = new FakeSubscription($this);
+        } else {
+            $this->currentSubscription = $currentSubscription;
+        }
     }
 
     public function getCurrentSubscription()
@@ -91,13 +52,3 @@ class User
         return $this->email === 'rakhim@ht.io';
     }
 }
-
-
-<?php
-
-namespace App;
-
-// BEGIN (write your solution here)
-
-// END
-
