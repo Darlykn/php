@@ -1,4 +1,16 @@
 <?php
+function sayHi($user)
+{
+ if ($user->isUser()) {
+ print_r("Hello, {$user}!");
+ } elseif ($user->isGuest()) {
+ print_r('Hello, guest!');
+ } else {
+ print_r('Who you are?');
+ }
+}
+
+<?php
 
 namespace App;
 
