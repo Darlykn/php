@@ -1,64 +1,61 @@
 <?php
-namespace App\HTML;
-use Tightenco\Collect;
 
-function stringify(array $tag): ?string {
-    switch ($tag['tagType']) {
-        case 'single':
-            return '<' . tagPart($tag) . '>';
-        case 'pair':
-            return '<' . tagPart($tag) . '>' . $tag['body'] . '</' . $tag['name'] . '>';
-        default:
-            return null;
-    }
-}
-
-function tagPart(array $tag): string {
-    $exceptedTags = [
-        'single' => ['name', 'tagType'],
-        'pair' => ['name', 'tagType', 'body']
-    ];
-
-    return trim($tag['name'] . ' ' . collect($tag)
-                ->except($exceptedTags[$tag['tagType']])
-                ->implode(fn ($value, $key) => $key . '=' . '"' . $value . '"', ' '));
-}
-
-
-<?php
 namespace App;
-class DatabaseConfigLoader {
-    private string $path;
-    public function __construct(string $path) {
-        $this->path = $path;
+
+class Subscription
+{
+    private $subscriptionPlanName;
+
+    public function __construct($subscriptionPlanName)
+    {
+        $this->subscriptionPlanName = $subscriptionPlanName;
+    }
+    public function hasProfessionalAccess()
+    {
+        return $this->subscriptionPlanName === 'professional';
     }
 
-    public function load(string $env): array {
-        $filename = "{$this->path}/database.{$env}.json";
-        $raw = file_get_contents($filename);
-        $config = json_decode($raw, associative: true);
+    public function hasPremiumAccess()
+    {
+        return $this->subscriptionPlanName === 'premium';
+    }
+}
 
-        if (isset($config['extend'])) {
-            $config = array_merge($this->load($config['extend']), $config);
-            unset($config['extend']);
-        }
+<?php
 
-        return $config;
+namespace App;
+
+class User
+{
+    private $currentSubscription;
+    private $email;
+
+    public function __construct($email, $currentSubscription = null)
+    {
+        $this->email = $email;
+        // BEGIN (write your solution here)
+        
+        // END
+        
+    }
+
+    public function getCurrentSubscription()
+    {
+        return $this->currentSubscription;
+    }
+
+    public function isAdmin()
+    {
+        return $this->email === 'rakhim@ht.io';
     }
 }
 
 
 <?php
 
-namespace App\KeyValueFunctions;
-function swapKeyValue($databaseObject): void {
-    $databaseObjectAsArray = array_flip($databaseObject->toArray());
+namespace App;
 
-    foreach ($databaseObjectAsArray as $key => $value) {
-        $databaseObject->set($key, $value);
+// BEGIN (write your solution here)
 
-        if ($databaseObject->get($value) == $key) {
-            $databaseObject->unset($value);
-        }
-    }
-}
+// END
+
