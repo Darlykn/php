@@ -68,3 +68,26 @@ class HTMLTest extends TestCase
         $this->assertEquals($expected, $html);
     }
 }
+
+
+namespace App\HTML;
+
+function stringify($tag) {
+    $attrs = array_filter($tag, function($key) {
+        return !in_array($key, ['name', 'tagType', 'body']);
+    }, ARRAY_FILTER_USE_KEY);
+
+    $html = "<{$tag['name']}";
+    foreach ($attrs as $key => $value) {
+        $html .= " {$key}=\"{$value}\"";
+    }
+
+    if (isset($tag['tagType']) && $tag['tagType'] === 'single') {
+        $html .= '>';
+    } else {
+        $html .= ">" . $tag['body'] . "</{$tag['name']}>";
+    }
+
+    return $html;
+}
+
