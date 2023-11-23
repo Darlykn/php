@@ -140,3 +140,30 @@ function makeInnerTagPart(array $tag): string {
                 ->except($exceptedTags[$tag['tagType']])
                 ->implode(fn ($value, $key) => $key . '=' . '"' . $value . '"', ' '));
 }
+
+
+namespace task38\HTML;
+
+use Tightenco\Collect\Support\Collection;
+
+function stringify(array $tag): ?string {
+    switch ($tag['tagType']) {
+        case 'single':
+            return '<' . makeInnerTagPart($tag) . '>';
+        case 'pair':
+            return '<' . makeInnerTagPart($tag) . '>' . $tag['body'] . '</' . $tag['name'] . '>';
+        default:
+            return null;
+    }
+}
+
+function makeInnerTagPart(array $tag): string {
+    $exceptedKeys = $tag['tagType'] === 'single' ? ['name', 'tagType'] : ['name', 'tagType', 'body'];
+
+    return $tag['name'] . ' ' . (new Collection($tag))
+                ->except($exceptedKeys)
+                ->mapWithKeys(function ($value, $key) {
+                    return [$key => "{$key}=\"{$value}\""];
+                })
+                ->implode(' ');
+}
