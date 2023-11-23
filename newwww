@@ -1,95 +1,29 @@
-
-function stringify($tag) {
-    // Открывающий тег
-    $html = "<" . $tag['name'];
-    
-    // Добавление атрибутов
-    foreach ($tag as $key => $value) {
-        if (!in_array($key, ['name', 'tagType', 'body'])) {
-            $html .= " " . $key . '="' . $value . '"';
-        }
-    }
-    
-    // Закрытие тега для одиночных тегов
-    if ($tag['tagType'] === 'single') {
-        $html .= " />";
-    } else {
-        // Добавление тела и закрывающего тега для парных тегов
-        $html .= ">" . $tag['body'] . "</" . $tag['name'] . ">";
-    }
-    
-    return $html;
-}
-
 <?php
-
-namespace App\Tests;
-
-use PHPUnit\Framework\TestCase;
-
-use function App\HTML\stringify;
-
-class HTMLTest extends TestCase
-{
-    public function testStringify1()
-    {
-        $tag = ['name' => 'hr', 'class' => 'px-3', 'id' => 'myid', 'tagType' => 'single'];
-        $html = stringify($tag);
-
-        $expected = '<hr class="px-3" id="myid">';
-        $this->assertEquals($expected, $html);
-    }
-
-    public function testStringify2()
-    {
-        $tag = ['name' => 'p', 'tagType' => 'pair', 'body' => 'text'];
-        $html = stringify($tag);
-
-        $expected = '<p>text</p>';
-        $this->assertEquals($expected, $html);
-    }
-
-    public function testStringify3()
-    {
-        $tag = ['name' => 'div', 'tagType' => 'pair', 'body' => 'text2', 'id' => 'wow'];
-        $html = stringify($tag);
-
-        $expected = '<div id="wow">text2</div>';
-        $this->assertEquals($expected, $html);
-    }
-
-    public function testStringify4()
-    {
-        $randomAttr = 'attr_' . rand();
-        $tag = ['name' => 'div', 'tagType' => 'pair', 'body' => 'text2', 'id' => 'wow', $randomAttr => 'value'];
-        $html = stringify($tag);
-
-        $expected = '<div id="wow" ' . $randomAttr . '="value">text2</div>';
-        $this->assertEquals($expected, $html);
-    }
-}
-
-
 namespace App\HTML;
+use Tightenco\Collect;
 
-function stringify($tag) {
-    $attrs = array_filter($tag, function($key) {
-        return !in_array($key, ['name', 'tagType', 'body']);
-    }, ARRAY_FILTER_USE_KEY);
-
-    $html = "<{$tag['name']}";
-    foreach ($attrs as $key => $value) {
-        $html .= " {$key}=\"{$value}\"";
+function stringify(array $tag): ?string {
+    switch ($tag['tagType']) {
+        case 'single':
+            return '<' . tagPart($tag) . '>';
+        case 'pair':
+            return '<' . tagPart($tag) . '>' . $tag['body'] . '</' . $tag['name'] . '>';
+        default:
+            return null;
     }
-
-    if (isset($tag['tagType']) && $tag['tagType'] === 'single') {
-        $html .= '>';
-    } else {
-        $html .= ">" . $tag['body'] . "</{$tag['name']}>";
-    }
-
-    return $html;
 }
+
+function tagPart(array $tag): string {
+    $exceptedTags = [
+        'single' => ['name', 'tagType'],
+        'pair' => ['name', 'tagType', 'body']
+    ];
+
+    return trim($tag['name'] . ' ' . collect($tag)
+                ->except($exceptedTags[$tag['tagType']])
+                ->implode(fn ($value, $key) => $key . '=' . '"' . $value . '"', ' '));
+}
+
 
 <?php
 namespace App;
@@ -113,57 +47,3 @@ class DatabaseConfigLoader {
     }
 }
 
-<?php
-
-namespace task38\HTML;
-
-use Tightenco\Collect;
-
-function stringify(array $tag): ?string {
-    switch ($tag['tagType']) {
-        case 'single':
-            return '<' . makeInnerTagPart($tag) . '>';
-        case 'pair':
-            return '<' . makeInnerTagPart($tag) . '>' . $tag['body'] . '</' . $tag['name'] . '>';
-        default:
-            return null;
-    }
-}
-
-function makeInnerTagPart(array $tag): string {
-    $exceptedTags = [
-        'single' => ['name', 'tagType'],
-        'pair' => ['name', 'tagType', 'body']
-    ];
-
-    return trim($tag['name'] . ' ' . collect($tag)
-                ->except($exceptedTags[$tag['tagType']])
-                ->implode(fn ($value, $key) => $key . '=' . '"' . $value . '"', ' '));
-}
-
-
-namespace task38\HTML;
-
-use Tightenco\Collect\Support\Collection;
-
-function stringify(array $tag): ?string {
-    switch ($tag['tagType']) {
-        case 'single':
-            return '<' . makeInnerTagPart($tag) . '>';
-        case 'pair':
-            return '<' . makeInnerTagPart($tag) . '>' . $tag['body'] . '</' . $tag['name'] . '>';
-        default:
-            return null;
-    }
-}
-
-function makeInnerTagPart(array $tag): string {
-    $exceptedKeys = $tag['tagType'] === 'single' ? ['name', 'tagType'] : ['name', 'tagType', 'body'];
-
-    return $tag['name'] . ' ' . (new Collection($tag))
-                ->except($exceptedKeys)
-                ->mapWithKeys(function ($value, $key) {
-                    return [$key => "{$key}=\"{$value}\""];
-                })
-                ->implode(' ');
-}
