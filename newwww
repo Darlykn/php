@@ -36,3 +36,27 @@ function getLinks(array $tags): array {
         ->values()
         ->all();
 }
+
+
+function stringify($tag) {
+    // Открывающий тег
+    $html = "<" . $tag['name'];
+    
+    // Добавление атрибутов
+    foreach ($tag as $key => $value) {
+        if (!in_array($key, ['name', 'tagType', 'body'])) {
+            $html .= " " . $key . '="' . $value . '"';
+        }
+    }
+    
+    // Закрытие тега для одиночных тегов
+    if ($tag['tagType'] === 'single') {
+        $html .= " />";
+    } else {
+        // Добавление тела и закрывающего тега для парных тегов
+        $html .= ">" . $tag['body'] . "</" . $tag['name'] . ">";
+    }
+    
+    return $html;
+}
+
