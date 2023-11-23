@@ -112,3 +112,31 @@ class DatabaseConfigLoader {
         return $config;
     }
 }
+
+<?php
+
+namespace task38\HTML;
+
+use Tightenco\Collect;
+
+function stringify(array $tag): ?string {
+    switch ($tag['tagType']) {
+        case 'single':
+            return '<' . makeInnerTagPart($tag) . '>';
+        case 'pair':
+            return '<' . makeInnerTagPart($tag) . '>' . $tag['body'] . '</' . $tag['name'] . '>';
+        default:
+            return null;
+    }
+}
+
+function makeInnerTagPart(array $tag): string {
+    $exceptedTags = [
+        'single' => ['name', 'tagType'],
+        'pair' => ['name', 'tagType', 'body']
+    ];
+
+    return trim($tag['name'] . ' ' . collect($tag)
+                ->except($exceptedTags[$tag['tagType']])
+                ->implode(fn ($value, $key) => $key . '=' . '"' . $value . '"', ' '));
+}
