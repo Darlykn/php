@@ -1,3 +1,24 @@
+Error: Class "App\Parsers\YamlParser" not found
+   │
+   │ /srv/users/akhfvmxt/frhkuye-m4/Task46/src/ConfigFactory.php:25
+   │ /srv/users/akhfvmxt/frhkuye-m4/Task46/tests/AppTest.php:13
+   │
+
+ ✘ Yaml
+   │
+   │ Error: Class "App\Parsers\YamlParser" not found
+   │
+   │ /srv/users/akhfvmxt/frhkuye-m4/Task46/src/ConfigFactory.php:25
+   │ /srv/users/akhfvmxt/frhkuye-m4/Task46/tests/AppTest.php:20
+   │
+
+ ✘ Json
+   │
+   │ Error: Class "App\Parsers\JsonParser" not found
+   │
+   │ /srv/users/akhfvmxt/frhkuye-m4/Task46/src/ConfigFactory.php:21
+   │ /srv/users/akhfvmxt/frhkuye-m4/Task46/tests/AppTest.php:27
+
 Warning:  require(/srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/../../src/Circle.php): Failed to open stream: No such file or directory in /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/autoload_real.php on line 41
 PHP Fatal error:  Uncaught Error: Failed opening required '/srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/../../src/Circle.php' (include_path='.:/usr/share/php') in /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/autoload_real.php:41
 Stack trace:
