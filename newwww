@@ -1,3 +1,13 @@
+Warning:  require(/srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/../../src/Circle.php): Failed to open stream: No such file or directory in /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/autoload_real.php on line 41
+PHP Fatal error:  Uncaught Error: Failed opening required '/srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/../../src/Circle.php' (include_path='.:/usr/share/php') in /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/autoload_real.php:41
+Stack trace:
+#0 /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/autoload_real.php(45): {closure}()
+#1 /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/autoload.php(25): ComposerAutoloaderInitfbee484fbcb98ba45566f17e8eb69e9b::getLoader()
+#2 /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/phpunit/phpunit/phpunit(105): require('...')
+#3 /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/bin/phpunit(122): include('...')
+#4 {main}
+  thrown in /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/autoload_real.php on line 41
+
 <?php
 
 namespace App\Tests;
