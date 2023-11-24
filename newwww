@@ -1,3 +1,28 @@
+namespace App\Parsers;
+
+use Symfony\Component\Yaml\Yaml;
+
+class YamlParser
+{
+    public static function parse($content)
+    {
+        return Yaml::parse($content);
+    }
+}
+
+namespace App\Parsers;
+
+class JsonParser
+{
+    public static function parse($content)
+    {
+        return json_decode($content, true);
+    }
+}
+
+
+
+
 namespace App;
 
 use App\Parsers\JsonParser;
