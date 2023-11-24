@@ -1,4 +1,51 @@
 <?php
+
+namespace App\Helpers;
+
+function getGreeting($user)
+{
+    $userType = $user->getType();
+
+    if ($userType == 'registered') {
+        return "Hello " . $user->getName() . "!";
+    } elseif ($userType == 'guest') {
+        return "Nice to meet you Guest!";
+    } else {
+        // Опционально: обработка других типов пользователей
+        return "Hello there!";
+    }
+}
+<?php
+
+namespace App;
+
+class User
+{
+    // ... существующий код ...
+
+    public function getType()
+    {
+        return 'registered';
+    }
+
+    // ... остальной код ...
+}
+
+class Guest
+{
+    // ... существующий код ...
+
+    public function getType()
+    {
+        return 'guest';
+    }
+
+    // ... остальной код ...
+}
+
+
+
+<?php
 function sayHi($user)
 {
  if ($user->isUser()) {
