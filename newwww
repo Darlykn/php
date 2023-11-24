@@ -4,6 +4,67 @@ class HTMLDivElement extends HTMLElement
 {
     // Нет необходимости добавлять специфическую логику здесь, если она не требуется
 }
+namespace App;
+
+class HTMLElement
+{
+    private $attributes = [];
+
+    public function __construct($attributes = [])
+    {
+        $this->attributes = $attributes;
+    }
+
+    public function addClass($className)
+    {
+        $classes = $this->getClassesAsArray();
+        if (!in_array($className, $classes)) {
+            $classes[] = $className;
+        }
+        $this->attributes['class'] = $this->classesArrayToString($classes);
+    }
+
+    public function removeClass($className)
+    {
+        $classes = $this->getClassesAsArray();
+        $this->attributes['class'] = $this->classesArrayToString(array_filter($classes, function($class) use ($className) {
+            return $class !== $className;
+        }));
+    }
+
+    public function toggleClass($className)
+    {
+        $classes = $this->getClassesAsArray();
+        if (in_array($className, $classes)) {
+            $this->removeClass($className);
+        } else {
+            $this->addClass($className);
+        }
+    }
+
+    public function getAttribute($attrName)
+    {
+        return $this->attributes[$attrName] ?? null;
+    }
+
+    private function getClassesAsArray()
+    {
+        if (empty($this->attributes['class'])) {
+            return [];
+        }
+        return explode(' ', $this->attributes['class']);
+    }
+
+    private function classesArrayToString(array $classes)
+    {
+        return implode(' ', $classes);
+    }
+
+    protected function stringifyAttributes()
+    {
+        // Реализация зависит от требований к выводу атрибутов
+    }
+}
 
 
 
