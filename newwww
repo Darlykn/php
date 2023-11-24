@@ -1,5 +1,28 @@
 namespace App;
 
+class Base
+{
+    public function isInstanceOf($className)
+    {
+        // Получаем имя текущего класса
+        $currentClass = get_class($this);
+
+        // Проверяем, совпадает ли текущий класс с заданным
+        if ($currentClass === $className) {
+            return true;
+        }
+
+        // Получаем всех родителей текущего класса
+        $parents = class_parents($this);
+
+        // Проверяем, находится ли заданный класс среди родителей
+        return in_array($className, $parents, true);
+    }
+}
+
+
+namespace App;
+
 class HTMLDivElement extends HTMLElement
 {
     // Нет необходимости добавлять специфическую логику здесь, если она не требуется
