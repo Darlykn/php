@@ -1,72 +1,31 @@
-Failed asserting that two strings are equal.
-   │ --- Expected
-   │ +++ Actual
-   │ @@ @@
-   │ -'<hr>'
-   │ +'<hr >'
-   │
-   │ /srv/users/akhfvmxt/frhkuye-m4/Task51/tests/HTMLHrElementTest.php:14
+Модификаторы доступа
+src\HTMLElement.php
+Реализуйте набор методов для работы с классами:
 
+addClass($className) – добавляет класс
+removeClass($className) – удаляет класс
+toggleClass($className) – ставит класс если его не было и убирает если он был
+Эти методы должны обрабатывать свойство 'class' (внутри строка) массива $this->attributes. В процессе реализации вам понадобится постоянно преобразовывать строку классов в массив и обратно. Вынесите эту операцию в отдельные функции и установите им правильный модификатор доступа.
 
-
-<?php
-
-namespace App\Tests;
-
-use App\HTMLHrElement;
-use PHPUnit\Framework\TestCase;
-
-class HTMLHrElementTest extends TestCase
-{
-    public function test()
-    {
-        $hr = new HTMLHrElement();
-        $expected = '<hr>';
-        $this->assertEquals($expected, $hr->__toString());
-
-        $hr = new HTMLHrElement(['class' => 'w-75', 'id' => 'wop']);
-        $expected = '<hr class="w-75" id="wop">';
-        $this->assertEquals($expected, $hr->__toString());
-    }
-}
-
-
-
-namespace App;
-
-class HTMLElement
-{
-    private $attributes = [];
-
-    public function __construct($attributes = [])
-    {
-        $this->attributes = $attributes;
-    }
-
-    protected function stringifyAttributes()
-    {
-        return implode(' ', array_map(function ($key, $value) {
-            return "$key=\"$value\"";
-        }, array_keys($this->attributes), $this->attributes));
-    }
-}
-
-namespace App;
-
-class HTMLHrElement extends HTMLElement
-{
-    public function __toString()
-    {
-        $attributes = $this->stringifyAttributes();
-        return "<hr " . $attributes . ">";
-    }
-}
-
-
+$div = new HTMLDivElement(['class' => 'one two']);
+$div->getAttribute('class'); // 'one two'
+ 
+$div->addClass('small');
+$div->getAttribute('class'); // 'one two small'
+ 
+$div->addClass('small');
+$div->getAttribute('class'); // 'one two small'
+ 
+$div->removeClass('two');
+$div->getAttribute('class'); // 'one small'
+ 
+$div->toggleClass('small');
+$div->getAttribute('class'); // 'one'
+ 
+$div->toggleClass('small');
+$div->getAttribute('class'); // 'one small'
 
 <?php
-
-
 
 namespace App;
 
@@ -90,188 +49,6 @@ class HTMLElement
 
 namespace App;
 
-// BEGIN (write your solution here)
-
-// END
-
-
-
-
-<?php
-
-namespace App\Square;
-
-use App\Dispatcher;
-
-function init()
+class HTMLDivElement extends HTMLElement
 {
-    Dispatcher\defmethod(__NAMESPACE__, 'getArea', function ($self) {
-        $side = getSide($self);
-        return $side * $side;
-    });
-}
-
-function make($sideLength)
-{
-    return ['name' => __NAMESPACE__, 'data' => ['side' => $sideLength]];
-}
-
-function getSide($self)
-{
-    return $self['data']['side'];
-}
-
-
-
-
-<?php
-
-namespace App\Figure;
-
-use App\Dispatcher;
-
-function getArea($self, ...$args)
-{
-    return Dispatcher\call($self, __FUNCTION__, $args);
-}
-<?php
-
-namespace App\Circle;
-
-use App\Dispatcher;
-
-function init()
-{
-    Dispatcher\defmethod(__NAMESPACE__, 'getArea', function ($self) {
-        return pi() * $self['data']['radius'] ** 2;
-    });
-}
-
-function make($radius)
-{
-    return ['name' => __NAMESPACE__, 'data' => ['radius' => $radius]];
-}
-
-function getRadius($self)
-{
-    return $self['data']['radius'];
-}
-<?php
-
-namespace App\Square;
-
-use App\Dispatcher;
-
-// BEGIN (write your solution here)
-
-// END
-
-
-
-
-
-<?php
-
-namespace App\Helpers;
-
-function getGreeting($user)
-{
-    $userType = $user->getType();
-
-    if ($userType == 'registered') {
-        return "Hello " . $user->getName() . "!";
-    } elseif ($userType == 'guest') {
-        return "Nice to meet you Guest!";
-    } else {
-        // Опционально: обработка других типов пользователей
-        return "Hello there!";
-    }
-}
-<?php
-
-namespace App;
-
-class User
-{
-    // ... существующий код ...
-
-    public function getType()
-    {
-        return 'registered';
-    }
-
-    // ... остальной код ...
-}
-
-class Guest
-{
-    // ... существующий код ...
-
-    public function getType()
-    {
-        return 'guest';
-    }
-
-    // ... остальной код ...
-}
-
-
-
-<?php
-function sayHi($user)
-{
- if ($user->isUser()) {
- print_r("Hello, {$user}!");
- } elseif ($user->isGuest()) {
- print_r('Hello, guest!');
- } else {
- print_r('Who you are?');
- }
-}
-
-<?php
-
-namespace App;
-
-class User
-{
-    private $name;
-
-    public function __construct($name)
-    {
-        $this->name = $name;
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function getGreeting()
-    {
-        return "Hello " . $this->getName() . "!";
-    }
-}
-
-class Guest
-{
-    public function getName()
-    {
-        return 'Guest';
-    }
-
-    public function getGreeting()
-    {
-        return "Nice to meet you Guest!";
-    }
-}
-
-
-<?php
-
-namespace App\Helpers;
-
-function getGreeting($user)
-{
-    return $user->getGreeting();
 }
