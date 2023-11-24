@@ -1,3 +1,14 @@
+Failed asserting that two strings are equal.
+   │ --- Expected
+   │ +++ Actual
+   │ @@ @@
+   │ -'<hr>'
+   │ +'<hr >'
+   │
+   │ /srv/users/akhfvmxt/frhkuye-m4/Task51/tests/HTMLHrElementTest.php:14
+
+
+
 <?php
 
 namespace App\Tests;
