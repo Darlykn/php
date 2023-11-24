@@ -1,5 +1,51 @@
 <?php
 
+namespace App\Figure;
+
+use App\Dispatcher;
+
+function getArea($self, ...$args)
+{
+    return Dispatcher\call($self, __FUNCTION__, $args);
+}
+<?php
+
+namespace App\Circle;
+
+use App\Dispatcher;
+
+function init()
+{
+    Dispatcher\defmethod(__NAMESPACE__, 'getArea', function ($self) {
+        return pi() * $self['data']['radius'] ** 2;
+    });
+}
+
+function make($radius)
+{
+    return ['name' => __NAMESPACE__, 'data' => ['radius' => $radius]];
+}
+
+function getRadius($self)
+{
+    return $self['data']['radius'];
+}
+<?php
+
+namespace App\Square;
+
+use App\Dispatcher;
+
+// BEGIN (write your solution here)
+
+// END
+
+
+
+
+
+<?php
+
 namespace App\Helpers;
 
 function getGreeting($user)
