@@ -1,4 +1,38 @@
+namespace App;
+
+class HTMLElement
+{
+    private $attributes = [];
+
+    public function __construct($attributes = [])
+    {
+        $this->attributes = $attributes;
+    }
+
+    protected function stringifyAttributes()
+    {
+        return implode(' ', array_map(function ($key, $value) {
+            return "$key=\"$value\"";
+        }, array_keys($this->attributes), $this->attributes));
+    }
+}
+
+namespace App;
+
+class HTMLHrElement extends HTMLElement
+{
+    public function __toString()
+    {
+        $attributes = $this->stringifyAttributes();
+        return "<hr " . $attributes . ">";
+    }
+}
+
+
+
 <?php
+
+
 
 namespace App;
 
