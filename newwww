@@ -1,274 +1,44 @@
-Error: Class "App\Parsers\YamlParser" not found
-   │
-   │ /srv/users/akhfvmxt/frhkuye-m4/Task46/src/ConfigFactory.php:25
-   │ /srv/users/akhfvmxt/frhkuye-m4/Task46/tests/AppTest.php:13
-   │
+<?php
 
- ✘ Yaml
-   │
-   │ Error: Class "App\Parsers\YamlParser" not found
-   │
-   │ /srv/users/akhfvmxt/frhkuye-m4/Task46/src/ConfigFactory.php:25
-   │ /srv/users/akhfvmxt/frhkuye-m4/Task46/tests/AppTest.php:20
-   │
+namespace App\Task58;
 
- ✘ Json
-   │
-   │ Error: Class "App\Parsers\JsonParser" not found
-   │
-   │ /srv/users/akhfvmxt/frhkuye-m4/Task46/src/ConfigFactory.php:21
-   │ /srv/users/akhfvmxt/frhkuye-m4/Task46/tests/AppTest.php:27
+class HTMLImgElement extends HTMLElement
+{
+    private const ATTRIBUTE_NAMES = ['src'];
 
-Warning:  require(/srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/../../src/Circle.php): Failed to open stream: No such file or directory in /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/autoload_real.php on line 41
-PHP Fatal error:  Uncaught Error: Failed opening required '/srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/../../src/Circle.php' (include_path='.:/usr/share/php') in /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/autoload_real.php:41
-Stack trace:
-#0 /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/autoload_real.php(45): {closure}()
-#1 /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/autoload.php(25): ComposerAutoloaderInitfbee484fbcb98ba45566f17e8eb69e9b::getLoader()
-#2 /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/phpunit/phpunit/phpunit(105): require('...')
-#3 /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/bin/phpunit(122): include('...')
-#4 {main}
-  thrown in /srv/users/akhfvmxt/frhkuye-m4/Task46/vendor/composer/autoload_real.php on line 41
+    public static function getAttributeNames()
+    {
+        return array_merge(parent::getAttributeNames(), static::ATTRIBUTE_NAMES);
+    }
+
+    public function isValid() {
+        $array = array_diff(array_keys(self::getAttributes()), self::getAttributeNames());
+        return count($array) === 0;
+    }
+}
 
 <?php
 
-namespace App\Tests;
+namespace App\Task58;
 
-use PHPUnit\Framework\TestCase;
-use App\ConfigFactory;
-use App\Config;
-
-class AppTest extends TestCase
+class HTMLButtonElement extends HTMLElement
 {
-    public function testYml()
+    private const ATTRIBUTE_NAMES = ['type'];
+    private const TYPE_NAMES = ['button', 'submit', 'reset'];
+
+    public static function getAttributeNames()
     {
-        $config = ConfigFactory::build(__DIR__ . '/fixtures/test.yml');
-        $this->assertInstanceOf(Config::class, $config);
-        $this->assertEquals('value', $config->key);
+        return array_merge(parent::getAttributeNames(), static::ATTRIBUTE_NAMES);
     }
 
-    public function testYaml()
-    {
-        $config = ConfigFactory::build(__DIR__ . '/fixtures/test2.yaml');
-        $this->assertInstanceOf(Config::class, $config);
-        $this->assertEquals('another value', $config->key);
-    }
+    public function isValid() {
+        $attributes = self::getAttributes();
+        $array = array_diff(array_keys($attributes), self::getAttributeNames());
 
-    public function testJson()
-    {
-        $config = ConfigFactory::build(__DIR__ . '/fixtures/test.json');
-        $this->assertInstanceOf(Config::class, $config);
-        $this->assertEquals('something else', $config->key);
-    }
-}
-
-
-
-
-namespace App\Parsers;
-
-use Symfony\Component\Yaml\Yaml;
-
-class YamlParser
-{
-    public static function parse($content)
-    {
-        return Yaml::parse($content);
-    }
-}
-
-namespace App\Parsers;
-
-class JsonParser
-{
-    public static function parse($content)
-    {
-        return json_decode($content, true);
-    }
-}
-
-
-
-
-namespace App;
-
-use App\Parsers\JsonParser;
-use App\Parsers\YamlParser;
-
-class ConfigFactory
-{
-    public static function build($filePath)
-    {
-        $extension = pathinfo($filePath, PATHINFO_EXTENSION);
-
-        $content = file_get_contents($filePath);
-        if ($content === false) {
-            throw new \Exception("Unable to read the file: $filePath");
+        if (!isset($attributes['type'])) {
+            return false;
         }
 
-        switch ($extension) {
-            case 'json':
-                $data = JsonParser::parse($content);
-                break;
-            case 'yml':
-            case 'yaml':
-                $data = YamlParser::parse($content);
-                break;
-            default:
-                throw new \Exception("Unsupported file type: $extension");
-        }
-
-        return new Config($data);
+        return count($array) === 0 && in_array($attributes['type'], self::TYPE_NAMES);
     }
-}
-
-
-
-namespace App;
-
-class Base
-{
-    public function isInstanceOf($className)
-    {
-        // Получаем имя текущего класса
-        $currentClass = get_class($this);
-
-        // Проверяем, совпадает ли текущий класс с заданным
-        if ($currentClass === $className) {
-            return true;
-        }
-
-        // Получаем всех родителей текущего класса
-        $parents = class_parents($this);
-
-        // Проверяем, находится ли заданный класс среди родителей
-        return in_array($className, $parents, true);
-    }
-}
-
-
-namespace App;
-
-class HTMLDivElement extends HTMLElement
-{
-    // Нет необходимости добавлять специфическую логику здесь, если она не требуется
-}
-namespace App;
-
-class HTMLElement
-{
-    private $attributes = [];
-
-    public function __construct($attributes = [])
-    {
-        $this->attributes = $attributes;
-    }
-
-    public function addClass($className)
-    {
-        $classes = $this->getClassesAsArray();
-        if (!in_array($className, $classes)) {
-            $classes[] = $className;
-        }
-        $this->attributes['class'] = $this->classesArrayToString($classes);
-    }
-
-    public function removeClass($className)
-    {
-        $classes = $this->getClassesAsArray();
-        $this->attributes['class'] = $this->classesArrayToString(array_filter($classes, function($class) use ($className) {
-            return $class !== $className;
-        }));
-    }
-
-    public function toggleClass($className)
-    {
-        $classes = $this->getClassesAsArray();
-        if (in_array($className, $classes)) {
-            $this->removeClass($className);
-        } else {
-            $this->addClass($className);
-        }
-    }
-
-    public function getAttribute($attrName)
-    {
-        return $this->attributes[$attrName] ?? null;
-    }
-
-    private function getClassesAsArray()
-    {
-        if (empty($this->attributes['class'])) {
-            return [];
-        }
-        return explode(' ', $this->attributes['class']);
-    }
-
-    private function classesArrayToString(array $classes)
-    {
-        return implode(' ', $classes);
-    }
-
-    protected function stringifyAttributes()
-    {
-        // Реализация зависит от требований к выводу атрибутов
-    }
-}
-
-
-
-
-
-Модификаторы доступа
-src\HTMLElement.php
-Реализуйте набор методов для работы с классами:
-
-addClass($className) – добавляет класс
-removeClass($className) – удаляет класс
-toggleClass($className) – ставит класс если его не было и убирает если он был
-Эти методы должны обрабатывать свойство 'class' (внутри строка) массива $this->attributes. В процессе реализации вам понадобится постоянно преобразовывать строку классов в массив и обратно. Вынесите эту операцию в отдельные функции и установите им правильный модификатор доступа.
-
-$div = new HTMLDivElement(['class' => 'one two']);
-$div->getAttribute('class'); // 'one two'
- 
-$div->addClass('small');
-$div->getAttribute('class'); // 'one two small'
- 
-$div->addClass('small');
-$div->getAttribute('class'); // 'one two small'
- 
-$div->removeClass('two');
-$div->getAttribute('class'); // 'one small'
- 
-$div->toggleClass('small');
-$div->getAttribute('class'); // 'one'
- 
-$div->toggleClass('small');
-$div->getAttribute('class'); // 'one small'
-
-<?php
-
-namespace App;
-
-class HTMLElement
-{
-    private $attributes = [];
-
-    public function __construct($attributes = [])
-    {
-        $this->attributes = $attributes;
-    }
-
-    protected function stringifyAttributes()
-    {
-        // BEGIN (write your solution here)
-        
-        // END
-    }
-}
-<?php
-
-namespace App;
-
-class HTMLDivElement extends HTMLElement
-{
 }
